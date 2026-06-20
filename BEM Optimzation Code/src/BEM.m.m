@@ -12,25 +12,22 @@ theta_tip  = deg2rad(5);
 
 tol = 1e-6;
 max_iterations = 500;
-
 % Lambda sweep
 lambda_range = 0:0.2:10;
 Cp_list = zeros(size(lambda_range));
-
 best_lambda = 0;
 best_Cp = -inf;
 best_results = struct();
 
-% DISCRETIZATION
-N = R;
-r_hub = 0.2 * R;
-r_vec = linspace(r_hub, R, N);
-dr = r_vec(2) - r_vec(1);
-
-% Geometry
-chord = 2*(1 - r_vec/R) + 1;
-theta = theta_root + (theta_tip - theta_root) * (r_vec / R);
-
+    % DISCRETIZATION
+    N = R;
+    r_hub = 0.2 * R;
+    r_vec = linspace(r_hub, R, N);
+    dr = r_vec(2) - r_vec(1);
+    % Geometry
+    chord = 2*(1 - r_vec/R) + 1;
+    theta = theta_root + (theta_tip - theta_root) * (r_vec / R);
+    
 % RE Data
 Re_list = [50e3, 100e3, 200e3, 500e3, 1000e3];
 
@@ -45,7 +42,6 @@ for L = 1:length(lambda_range)
 
     lambda = lambda_range(L);
     Omega = lambda * U / R;
-
     a = zeros(1,N);
     ap = zeros(1,N);
     phi_arr = zeros(1,N);
@@ -62,7 +58,6 @@ for L = 1:length(lambda_range)
         ap_j = 0.01;
         
         for iter = 1:max_iterations
-            
             phi = atan( (U*(1 - a_j)) / (Omega*r*(1 + ap_j)) );
             
             alpha = phi - theta(j);
@@ -87,23 +82,20 @@ for L = 1:length(lambda_range)
             alpha_low = polar{idx}.Alpha;
             Cl_low_data = polar{idx}.Cl;
             Cd_low_data = polar{idx}.Cd;
-            
             alpha_high = polar{idx+1}.Alpha;
             Cl_high_data = polar{idx+1}.Cl;
             Cd_high_data = polar{idx+1}.Cd;
             
             Cl_low = interp1(alpha_low, Cl_low_data, alpha_deg, 'linear', 'extrap');
             Cd_low = interp1(alpha_low, Cd_low_data, alpha_deg, 'linear', 'extrap');
-            
             Cl_high = interp1(alpha_high, Cl_high_data, alpha_deg, 'linear', 'extrap');
             Cd_high = interp1(alpha_high, Cd_high_data, alpha_deg, 'linear', 'extrap');
             
-            Cl = (1-w)*Cl_low + w*Cl_high;
-            Cd = (1-w)*Cd_low + w*Cd_high;
-            
-            Cn = Cl*cos(phi) + Cd*sin(phi);
-            Ct = Cl*sin(phi) - Cd*cos(phi);
-            
+                Cl = (1-w)*Cl_low + w*Cl_high;
+                Cd = (1-w)*Cd_low + w*Cd_high;
+                Cn = Cl*cos(phi) + Cd*sin(phi);
+                Ct = Cl*sin(phi) - Cd*cos(phi);
+                
             f = (B/2)*(R - r)/(r*sin(phi));
             F = (2/pi)*acos(exp(-f));
             F = max(F, 1e-4);
@@ -157,37 +149,32 @@ plot(lambda_range, Cp_list, '*');
 xlabel('\lambda'); ylabel('C_p');
 title('Cp vs Tip Speed Ratio');
 grid on;
-
-fprintf('\nOptimal lambda = %.2f\n', best_lambda);
-fprintf('Maximum Cp = %.4f\n', best_Cp);
+    
+    fprintf('\nOptimal lambda = %.2f\n', best_lambda);
+    fprintf('Maximum Cp = %.4f\n', best_Cp);
 
 % Plots for best lambda
-
 figure;
 plot(r_vec, best_results.a, 'LineWidth',2); hold on;
 plot(r_vec, best_results.a, '*');
 xlabel('Radius (m)'); ylabel('a');
 title('Axial Induction Factor vs Radius');
 grid on;
-
 figure;
 plot(r_vec, best_results.ap, 'LineWidth',2); hold on;
 plot(r_vec, best_results.ap, '*');
 xlabel('Radius (m)'); ylabel('a''');
 title('Tangential Induction Factor vs Radius'); grid on;
-
 figure;
 plot(r_vec, best_results.aoa_arr, 'LineWidth',2); hold on;
 plot(r_vec, best_results.aoa_arr, '*');
 xlabel('Radius (m)'); ylabel('AoA (deg)');
 title('AOA Distribution vs Radius'); grid on;
-
 figure;
 plot(r_vec, best_results.phi_arr, 'LineWidth',2); hold on;
 plot(r_vec, best_results.phi_arr, '*');
 xlabel('Radius (m)'); ylabel('\phi (deg)');
 title('Flow Angle vs Radius'); grid on;
-
 figure;
 plot(r_vec, best_results.dT, 'LineWidth',2); hold on;
 plot(r_vec, best_results.dT, '*');
