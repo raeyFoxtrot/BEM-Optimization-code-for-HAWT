@@ -1,5 +1,7 @@
 ## Blade Element Momentum (BEM) Analysis with Tip Speed Ratio ##
 
+[![MATLAB](https://img.shields.io/badge/MATLAB-0076A8?style=for-the-badge&logo=mathworks&logoColor=white)](https://www.mathworks.com/)
+
 Overview
 This project implements the Blade Element Momentum (BEM) method to analyze the aerodynamic performance of a horizontal-axis wind turbine.
 
